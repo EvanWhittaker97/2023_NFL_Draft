@@ -1,0 +1,317 @@
+#import Packages
+
+import pandas as pd
+import numpy as np
+from scipy.stats import percentileofscore
+
+# read csv
+athleticism = pd.read_csv('all_positions.csv')
+
+# rename columns
+athleticism = athleticism.rename(columns={'position_symbol': 'position'})
+
+# change height from inches to feet
+athleticism['height_ft'] = round(athleticism['height_in'] / 12, 2)
+
+# drop height_in column
+athleticism = athleticism.drop('height_in', axis=1)
+
+# drop rows with at least 3 NA values 
+athleticism = athleticism.dropna(thresh=4)
+
+# find all unique values in the position column
+unique_positions = athleticism['position'].unique()
+
+# create specific CSV for each position
+for position, group in athleticism.groupby('position'):
+    # check if the current position is in the list of positions to create separate CSV files for
+    if position in unique_positions:
+        # create a filename for the CSV file based on the position
+        filename = f"{position}_rookie_athleticism.csv"
+        # save the group to a separate CSV file
+        group.to_csv(filename, index=False)
+
+
+
+
+# calculating percentiles based on position
+# it is important that percentile is comparing apples to apples
+# we don't want the speed of a WR being compared to the speed of an OL
+
+#WR
+# used this code for all other positions
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = WR[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    WR[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = WR[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    WR[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+WR['percentile'] = WR[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#EDGE
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = EDGE[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    EDGE[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = EDGE[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    EDGE[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+EDGE['percentile'] = EDGE[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#LB
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = LB[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    LB[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = LB[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    LB[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+LB['percentile'] = LB[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#OL
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = OL[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    OL[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = OL[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    OL[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+OL['percentile'] = OL[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#QB
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = QB[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    QB[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = QB[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    QB[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+QB['percentile'] = QB[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#RB
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = RB[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    RB[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = RB[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    RB[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+RB['percentile'] = RB[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#S
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = S[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    S[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = S[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    S[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+S['percentile'] = S[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#DL
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = DL[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    DL[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = DL[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    DL[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+DL['percentile'] = DL[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#TE
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = TE[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    TE[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = TE[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    TE[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+TE['percentile'] = TE[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+#CB
+for column in dash_and_cone_columns:
+    # rank the values in the current column
+    rank_column = CB[column].rank(method='min', ascending=True)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    CB[percentile_column_name] = percentile_column
+
+# iterate over the jump columns and calculate the percentile for each column
+for column in jump_columns:
+    # rank the values in the current column
+    rank_column = CB[column].rank(method='min', ascending=False)
+    # calculate the percentile for the current column for each row of the DataFrame
+    percentile_column = rank_column.apply(lambda x: round((len(rank_column)-x+1) / len(rank_column) * 100, 2))
+    # create a new column for the percentile values
+    percentile_column_name = f"{column}_percentile"
+    CB[percentile_column_name] = percentile_column
+
+# calculate the average percentile score for all 4 columns
+percentile_columns = [f"{column}_percentile" for column in dash_and_cone_columns + jump_columns]
+CB['percentile'] = TE[percentile_columns].mean(axis=1, skipna=True).round(2)
+
+
+
+# overwrite the previously created CSV's
+EDGE.to_csv('EDGE_athleticism_filled.csv', index=False)
+LB.to_csv('LB_athleticism_filled.csv', index=False)
+OL.to_csv('OL_athleticism_filled.csv', index=False)
+QB.to_csv('QB_athleticism_filled.csv', index=False)
+RB.to_csv('RB_athleticism_filled.csv', index=False)
+S.to_csv('S_athleticism_filled.csv', index=False)
+TE.to_csv('TE_athleticism_filled.csv', index=False)
+WR.to_csv('WR_athleticism_filled.csv', index=False)
+DL.to_csv('DL_athleticism_filled.csv', index=False)
+
+# combine the DataFrames into one
+athleticism_rookies = pd.concat([WR, DL, QB, RB, OL, CB, EDGE, LB, S, TE], ignore_index=True)
+
+# save the combined DataFrame to a CSV file
+athleticism_rookies.to_csv('athleticism_clean.csv', index=False)
